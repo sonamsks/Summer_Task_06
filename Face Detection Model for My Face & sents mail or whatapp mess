@@ -1,0 +1,227 @@
+import cv2
+import numpy as np 
+
+face_classifier = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+def face_extractor(img):
+    
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+    
+    if faces is ():
+        return None
+    
+    #crop all face found
+    
+    for (x,y,w,h) in faces:
+        cropped_face = img[y:y+h, x:x+w]
+        
+    return cropped_face
+
+cap = cv2.VideoCapture(0)
+count = 0
+
+# collect 1000 samples of yr face from webcam
+
+while True:
+    
+    ret, frame = cap.read()
+    if face_extractor(frame) is not None:
+        count += 1
+        face = cv2.resize(face_extractor(frame), (200,200))
+        #face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+        
+ #save file in specified dir with unique name
+        
+        file_name_path = './faces/user/' + str(count) + '.jpg'
+        cv2.imwrite(file_name_path, face)
+        
+ #put count on imgs & disp live count
+        
+        cv2.putText(face, str(count), (50,50), cv2.FONT_HERSHEY_COMPLEX, 1, (0,255,0), 2)
+        cv2.imshow('Face Cropper', face)
+        
+    else:
+        print("Face not found")
+        pass
+    
+    if cv2.waitKey(1) == 13 or count == 1000:
+        break
+        
+cap.release()
+cv2.destroyAllWindows()
+
+print("done")
+
+# First Model Trained=========
+
+import cv2
+import numpy as np
+from os import listdir
+
+from os.path import isfile, join
+
+data_path = './faces/user/'
+onlyfiles = [f for f in listdir(data_path) if isfile(join(data_path, f))]
+
+# create arrays for training data and labels
+
+Training_Data, Labels = [], []
+
+#================open training img in our datapath================================
+#==========create a numpy array for traning data==========================
+
+for i, files in enumerate(onlyfiles):
+                               image_path = data_path + onlyfiles[i]
+                               images = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+                               Training_Data.append(np.asarray(images, dtype = np.uint8))
+                               Labels.append(0)
+    
+#==========create numpy array for both training data and labels==========================
+Labels = np.asarray(Labels, dtype= np.int32)
+
+sonam_model = cv2.face_LBPHFaceRecognizer.create()
+
+#=================let's train our model=============================
+sonam_model.train(np.asarray(Training_Data), np.asarray(Labels))
+
+print("Model trained")
+
+# First Face Samples========
+
+def face_extractor(img):
+    
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+    
+    if faces is ():
+        return None
+    
+    #crop all face found
+    
+    for (x,y,w,h) in faces:
+        cropped_face = img[y:y+h, x:x+w]
+        
+    return cropped_face
+
+cap = cv2.VideoCapture(0)
+count = 0
+
+# collect 1000 samples of yr face from webcam
+
+while True:
+    
+    ret, frame = cap.read()
+    if face_extractor(frame) is not None:
+        count += 1
+        face = cv2.resize(face_extractor(frame), (200,200))
+        #face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+        
+ #save file in specified dir with unique name
+        
+        file_name_path = './faces/user/' + str(count) + '.jpg'
+        cv2.imwrite(file_name_path, face)
+        
+ #put count on imgs & disp live count
+        
+        cv2.putText(face, str(count), (50,50), cv2.FONT_HERSHEY_COMPLEX, 1, (0,255,0), 2)
+        cv2.imshow('Face Cropper', face)
+        
+    else:
+        print("Face not found")
+        pass
+    
+    if cv2.waitKey(1) == 13 or count == 1000:
+        break
+        
+cap.release()
+cv2.destroyAllWindows()
+
+print("done")
+
+#  When it recognises your face then__✓ It send mail to yr mail_id by writing this the face of yr name....✓ Second, it send WhatsApp message to yr friends ya family...
+
+import cv2
+import numpy
+import time
+import pywhatkit as kit
+from gmail import GMail,Message,gmail 
+
+face_classifier = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+def face_detector(img, size=0.5):
+    
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+    
+    if faces is ():
+        return img, []
+    
+    #crop all face found
+    for (x,y,w,h) in faces:
+        cv2.rectangle(img, (x,y), (x+w, y+h), (0,255,255),2)
+        r = img[y:y+h, x:x+w]
+        r = cv2.resize(r, (200,200))
+    return img, r
+       
+      # ======= open webcam =============
+        
+flag1=0
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    image, face = face_detector(frame)
+    try:
+        face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+        
+        # pass face to prediction model
+        #"results" comprises of tuple containing label and confidence value
+        results = sonam_model.predict(face)
+        results1 = sonam_model1.predict(face)
+  
+        
+        if results[1] < 500:
+            confidence = int( 100 * (1 - (results[1])/400))
+            display_string = str(confidence) + '% Confident it is User'
+            
+            cv2.putText(image, display_string, (100, 120), cv2.FONT_HERSHEY_COMPLEX, 1, (255,120,150), 2) 
+        
+            if confidence > 90:
+                cv2.putText(image, "HLO SONAM", (240, 440), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,0), 2)
+                cv2.imshow('Face Recognition', image)
+
+                print(".===== whatsapp Message ===============..")
+
+                #kit.sendwhatmsg("+91 number","hlo namaste, teja?",22,35,30,tab_close=True)
+                print("============.Sending email===========.")
+                gmail = GMail('****@gmail.com','password')
+                msg = Message('Test Message',to='*******@gmail.com',text='Aatm_Namaste sonam')
+                gmail.send(msg)
+
+                print("____Mail Successfully sent____.....!!")
+
+                kit.sendwhatmsg_instantly("+91 number","Namaste, Task_6 completed?",30)
+                print("____Whatappp message Successfully Sent_____!")
+                break
+       
+
+        else:
+            cv2.putText(image, "I DON'T KNOW", (250, 450), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2 )
+            cv2.imshow('Face Recognition', image )
+            
+    except:
+        cv2.putText(image, "No Face Found", (220, 120), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
+        cv2.putText(image, "looking for face", (250, 450), cv2.FONT_HERSHEY_COMPLEX, 1, (0,255,0), 2)
+        cv2.imshow('Face Recognition', image )
+        pass
+    
+    if cv2.waitKey(1) == 13:
+        break
+        
+cap.release()
+cv2.destroyAllWindows()
+
+
+        
+        
